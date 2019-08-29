@@ -1,6 +1,8 @@
 import React from 'react';
 import './App.css';
 import ListComponent from './ListComponent';
+import { thisTypeAnnotation } from '@babel/types';
+import AddItemComponent from './AddItemComponent';
 
 export interface ITodoItem {
   todo: string;
@@ -20,7 +22,7 @@ class App extends React.Component<{}, IAppState> {
 
     // Default values for state
     this.state = {
-      title: "Hej hej",
+      title: 'Hej hej',
       myList: [
         { todo: 'Gå ut med hunden', complete: false },
         { todo: 'Handla mat', complete: false },
@@ -31,13 +33,33 @@ class App extends React.Component<{}, IAppState> {
 
     // Bindings, to prevent call back errors to this
     this.handleClick = this.handleClick.bind(this);
+    this.toggle = this.toggle.bind(this);
+    this.addItem = this.addItem.bind(this);
   }
 
   handleClick() {
     this.setState({
-      title: "Du klickade på knappen",
-      reverseList: !this.state.reverseList,
-      myList: [...this.state.myList, { todo: "New item", complete: true }]
+      title: "Du klickade på knappen"
+    });
+  }
+
+  toggle(i: number) {
+    let list = this.state.myList;
+
+    // Toggle the complete between true/false
+    list[i].complete = !list[i].complete;
+
+    // Remove the item from the list
+    // list.splice(i, 1);
+
+    this.setState({
+      myList: list
+    });
+  }
+
+  addItem(newItem: ITodoItem) {
+    this.setState({
+      myList: [...this.state.myList, newItem]
     });
   }
 
@@ -52,7 +74,9 @@ class App extends React.Component<{}, IAppState> {
             <button type="button" onClick={this.handleClick}>Ändra texten</button>
           </p>
 
-          <ListComponent someList={this.state.myList} />
+          <AddItemComponent addNewItem={this.addItem} />
+
+          <ListComponent someList={this.state.myList} markAsComplete={this.toggle} />
         </header>
       </div>
     );
